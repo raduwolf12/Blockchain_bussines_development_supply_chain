@@ -17,8 +17,9 @@ contract ProductSC {
         Produced, // 0  Produced by factory
         Ordered, // 1  Sold to distributors
         Shipped, // 2 //shipped by distributors or transporters
-        Received, // 3 // received by retailors
-        Purchased // 4 //purchased by consumers
+        Stored, // 3 //product is stored 
+        Received, // 4 // received by retailors
+        Purchased // 5 //purchased by consumers
     }
     
     // different roles
@@ -26,7 +27,8 @@ contract ProductSC {
     Producer, // 0 
     Distributor, // 1 
     Retailer, // 2 
-    Consumer // 3
+    Depository, //3
+    Consumer // 4
     }
     
     // define a struct "Product"
@@ -85,6 +87,12 @@ contract ProductSC {
         _;
     }
     
+     modifier OnlyDepository() {
+        require(actors[msg.sender].role == Role.Depository, 'caller is not a depository.');
+        _;
+    }
+
+
      modifier OnlyConsumer() {
         require(actors[msg.sender].role == Role.Consumer, 'caller is not a consumer.');
         _;
