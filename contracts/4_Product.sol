@@ -43,6 +43,7 @@ contract ProductSC {
         address distributorID;
         address retailerID;
         address consumerID;
+        Details details;
         
     }
     
@@ -50,6 +51,16 @@ contract ProductSC {
         Role role;
         string name;
         bool isDefined;
+    }
+
+     struct Details {
+        string name;
+        string brand;
+        string size;
+        string weight;
+        string length ;  
+        string width ;  
+        string height;
     }
     
      mapping (address => uint256) private balances; //a key-value store, with the address, we can find the token balance of an address
@@ -158,77 +169,70 @@ contract ProductSC {
         actors[_addr] = actor;
         
     }
-    
-    // function produceProduct(uint256 _id, uint256 _timestamp, string memory _origin, string memory _lat, string memory _log, int256 _temp, uint256 _price) public OnlyProducer{
-    //     Product storage newProduct = product[_id];
-    //     newProduct.ID = _id;
-    //     newProduct.ownerID = msg.sender;
+    // produce a product and record the information on the blockchain, only the producer can call this function
+    function produceProduct(uint256 _id, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyProducer{
+        Product storage newProduct = product[_id];
+        newProduct.ID = _id;
+        newProduct.ownerID = msg.sender;
+        newProduct.producerID = msg.sender;
+        newProduct.timestamp[0] = _timestamp;
+      
+        newProduct.productState= State.Produced;
+      
+        newProduct.productPrice=_price; 
+        newProduct.distributorID=address(0);
+        newProduct.retailerID=address(0);
+        newProduct.consumerID=address(0);
+        newProduct.details.name = _name;
+        newProduct.details.brand= _brand;
+        newProduct.details.size = _size;
+        newProduct.details.weight = _weight;
+        newProduct.details.length = _length;  
+        newProduct.details.width = _width;  
+        newProduct.details.height = _height;
+    }
 
-    //     newProduct.producerID = msg.sender;
-        // newfish.timestamp[0] = _timestamp;
-        // newfish.origin = _origin;
+     // buy a product from the seller
+    function buyProduct(uint256 _id, uint256 _timestamp, string memory _lat, string memory _log, int256 _temp) public OnlyDistributor{
+        Product storage boughtProduct = product[_id];
+        uint256 tokenNumber = balances[msg.sender];
+        require(tokenNumber >= boughtProduct.productPrice);
+        require(boughtProduct.productState == State.Produced);
         
-        // newfish.latitude[_timestamp] = _lat;
-        // newfish.longitude[_timestamp] = _log;
-        // newfish.temperature[_timestamp] = _temp;
-        // newfish.fishPrice = _price;
-        // newfish.fishState = State.Catched;
-        // newfish.distributorID = address(0);
-        // newfish.retailerID = address(0);
-        // newfish.consumerID = address(0);
+        product[_id].timestamp[1] = _timestamp;  // update the on-chain information
+         product[_id].distributorID = msg.sender;
 
-    // }
+
+         tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
+         product[_id].productState = State.Purchased;
+         product[_id].ownerID = msg.sender;
+        
+    }
     
-    // // catch a fish and record the information on the blockchain, only the fisher can call this function
-    // function catchFish(uint256 _id, uint256 _timestamp, string memory _origin, string memory _lat, string memory _log, int256 _temp, uint256 _price) public OnlyFisher{
-    //     Fish storage newfish = fish[_id];
-    //     newfish.ID = _id;
-    //     newfish.ownerID = msg.sender;
-    //     newfish.fisherID = msg.sender;
-    //     newfish.timestamp[0] = _timestamp;
-    //     newfish.origin = _origin;
-        
-    //     newfish.latitude[_timestamp] = _lat;
-    //     newfish.longitude[_timestamp] = _log;
-    //     newfish.temperature[_timestamp] = _temp;
-    //     newfish.fishPrice = _price;
-    //     newfish.fishState = State.Catched;
-    //     newfish.distributorID = address(0);
-    //     newfish.retailerID = address(0);
-    //     newfish.consumerID = address(0);
-    //     checkTemp(_id,_timestamp);
-        
-    // }
+    // retrieve a product's information at a specified time
+//     function getProductInfo(uint256 _id, uint256 _timestamp) public view returns 
+//     (
+//     uint256 fish_id, 
+//     address fisher_id, 
+//     address owner_id, 
+//     string memory fish_origin, 
+//    // uint256 time, 
+//     string memory lat, 
+//     string memory log, 
+//     bool quality, 
+//     State currentState
+//     )
     
-    // // a distributor buys a fish from the fisher
-    // function buyFish(uint256 _id, uint256 _timestamp, string memory _lat, string memory _log, int256 _temp) public OnlyDistributor{
-    //     Fish storage boughtfish = fish[_id];
-    //     uint256 tokenNumber = balances[msg.sender];
-    //     require(tokenNumber >= boughtfish.fishPrice);
-    //     require(boughtfish.safety == true && boughtfish.fishState == State.Catched);
-        
-    //     fish[_id].timestamp[1] = _timestamp;  // update the on-chain information
-    //     fish[_id].latitude[_timestamp] = _lat;
-    //     fish[_id].longitude[_timestamp] = _log;
-    //      fish[_id].temperature[_timestamp] = _temp;
-    //      fish[_id].distributorID = msg.sender;
-    //      fish[_id].safety = false;
-    //      require(_temp <= temp_threshold);
-    //      fish[_id].safety = true;
-    //      tokenTransfer(fish[_id].ownerID,boughtfish.fishPrice);
-    //      fish[_id].fishState = State.Sold;
-    //      fish[_id].ownerID = msg.sender;
-        
-    //     //  if (_temp <= temp_threshold) {
-    //     // balances[msg.sender] -= boughtfish.fishPrice;
-    //     // balances[fish[_id].ownerID] += boughtfish.fishPrice;
-    //     // fish[_id].fishState = State.Sold;
-    //     // fish[_id].ownerID = msg.sender;
-    //     //  }
-    //     //  else 
-    //     //  fish[_id].safety = false;
-        
-    // }
+//     {
+//     fish_id = fish[_id].ID; 
+//     fisher_id = fish[_id].fisherID;
+//     owner_id = fish[_id].ownerID;
+//     fish_origin = fish[_id].origin;
+//     lat = fish[_id].latitude[_timestamp];
+//     log = fish[_id].longitude[_timestamp];
+//     quality = fish[_id].safety;
+//     currentState = fish[_id].fishState;
+// }
     
 //     // retrieve a product's information at a specified time
 //     function getFishInfo(uint256 _id, uint256 _timestamp) public view returns 

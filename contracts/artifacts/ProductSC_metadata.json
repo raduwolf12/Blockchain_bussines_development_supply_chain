@@ -45,6 +45,39 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_lat",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_log",
+						"type": "string"
+					},
+					{
+						"internalType": "int256",
+						"name": "_temp",
+						"type": "int256"
+					}
+				],
+				"name": "buyProduct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "buyToken",
 				"outputs": [],
@@ -118,6 +151,64 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_brand",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_size",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_weight",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_length",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_width",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_height",
+						"type": "string"
+					}
+				],
+				"name": "produceProduct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -241,10 +332,10 @@
 	},
 	"sources": {
 		"contracts/4_Product.sol": {
-			"keccak256": "0x00d3534c81bd80f8ec94575a413a7d05c430a61a5bc97ed4e802039d072f57ce",
+			"keccak256": "0xa1fc156c2d17894ee66f8586eadac0e3979a6438d1483e64583ae33cb3e3445f",
 			"urls": [
-				"bzz-raw://7c94d14d00e272ea7403ab399d667f79386447faf1b91d7db27cec6e5e91f916",
-				"dweb:/ipfs/QmXbSf6CFNhQp5cWKCRkaY9MWcwcsTJzdwa2UWGgrgcHyp"
+				"bzz-raw://28a7897e1c13e87988321fb65271f5246d28619b824aa2d6bb1762cfc79b3c00",
+				"dweb:/ipfs/QmaRzZ3Y5K5WuTkX14oQzHb5LFBx8EjbFtgkzzoA5qiYeQ"
 			]
 		}
 	},
