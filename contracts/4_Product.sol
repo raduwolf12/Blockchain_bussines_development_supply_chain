@@ -35,7 +35,7 @@ contract ProductSC {
     struct Product {
         uint256 ID; // the product identifier
         address ownerID; // the current owner of the product, the first owner is product
-        address factoryID; // the address of the factory
+        address producerID; // the address of the factory
         uint256[slot_num] timestamp; // different timestamps
         
         State productState;
@@ -159,14 +159,24 @@ contract ProductSC {
         
     }
     
-    
-    // // check if the temperature is less than a predefined value
-    // function checkTemp(uint256 _id, uint256 _timestamp) private {
-    //     Fish storage _fish = fish[_id];
-    //     if (_fish.temperature[_timestamp] <= temp_threshold)
-    //    fish[_id].safety = true;
-    //    else
-    //    fish[_id].safety = false;
+    // function produceProduct(uint256 _id, uint256 _timestamp, string memory _origin, string memory _lat, string memory _log, int256 _temp, uint256 _price) public OnlyProducer{
+    //     Product storage newProduct = product[_id];
+    //     newProduct.ID = _id;
+    //     newProduct.ownerID = msg.sender;
+
+    //     newProduct.producerID = msg.sender;
+        // newfish.timestamp[0] = _timestamp;
+        // newfish.origin = _origin;
+        
+        // newfish.latitude[_timestamp] = _lat;
+        // newfish.longitude[_timestamp] = _log;
+        // newfish.temperature[_timestamp] = _temp;
+        // newfish.fishPrice = _price;
+        // newfish.fishState = State.Catched;
+        // newfish.distributorID = address(0);
+        // newfish.retailerID = address(0);
+        // newfish.consumerID = address(0);
+
     // }
     
     // // catch a fish and record the information on the blockchain, only the fisher can call this function
