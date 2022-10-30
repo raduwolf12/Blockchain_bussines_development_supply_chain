@@ -193,7 +193,7 @@ contract ProductSC {
     }
 
      // buy a product from the seller
-    function buyProduct(uint256 _id, uint256 _timestamp, string memory _lat, string memory _log, int256 _temp) public OnlyDistributor{
+    function buyProduct(uint256 _id, uint256 _timestamp) public OnlyDistributor{
         Product storage boughtProduct = product[_id];
         uint256 tokenNumber = balances[msg.sender];
         require(tokenNumber >= boughtProduct.productPrice);

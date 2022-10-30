@@ -55,21 +55,6 @@
 						"internalType": "uint256",
 						"name": "_timestamp",
 						"type": "uint256"
-					},
-					{
-						"internalType": "string",
-						"name": "_lat",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "_log",
-						"type": "string"
-					},
-					{
-						"internalType": "int256",
-						"name": "_temp",
-						"type": "int256"
 					}
 				],
 				"name": "buyProduct",
@@ -332,10 +317,10 @@
 	},
 	"sources": {
 		"contracts/4_Product.sol": {
-			"keccak256": "0xa1fc156c2d17894ee66f8586eadac0e3979a6438d1483e64583ae33cb3e3445f",
+			"keccak256": "0x6c441804ace6075fea54ac5470bbf9dad21d04db0ee7f8f11ebad4fb796e8d76",
 			"urls": [
-				"bzz-raw://28a7897e1c13e87988321fb65271f5246d28619b824aa2d6bb1762cfc79b3c00",
-				"dweb:/ipfs/QmaRzZ3Y5K5WuTkX14oQzHb5LFBx8EjbFtgkzzoA5qiYeQ"
+				"bzz-raw://50463a480bf6a5935ca778e277f911856a36b35563cdf622a6b23350939cc7f5",
+				"dweb:/ipfs/QmQHdxQ7j36YTywopRrv9YPnKJ6oDBX4aqTjZgzGskK376"
 			]
 		}
 	},
