@@ -116,6 +116,171 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					}
+				],
+				"name": "getProductDetails",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "product_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "owner_id",
+						"type": "address"
+					},
+					{
+						"internalType": "enum ProductSC.State",
+						"name": "currentProductState",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "productPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "product_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "product_brand",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "product_size",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "product_weight",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "product_length",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "product_width",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "product_height",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_id",
+						"type": "uint256"
+					}
+				],
+				"name": "getProductInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "product_id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "producer_id",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "owner_id",
+						"type": "address"
+					},
+					{
+						"internalType": "enum ProductSC.State",
+						"name": "currentProductState",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "productPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "distributor_id",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "retailer_id",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "consumer_id",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "brand",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "size",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "weight",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "length",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "width",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "height",
+								"type": "string"
+							}
+						],
+						"internalType": "struct ProductSC.Details",
+						"name": "details",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "_amount",
 						"type": "uint256"
 					}
@@ -317,10 +482,10 @@
 	},
 	"sources": {
 		"contracts/4_Product.sol": {
-			"keccak256": "0xbf3a6b1ec1a4379f7a5d57f4a060b5fa91d56721a7464740aedf77f52da61116",
+			"keccak256": "0xe9d263de624d90a67ab19eaf425ced05f9aa33d507994c68eef049bb81b8fcdf",
 			"urls": [
-				"bzz-raw://d925e22df7a32f498d018841bcf9d2896fe0c774d0108039ac099a2d01c97c24",
-				"dweb:/ipfs/QmRt2ZJ2aZyq1xfCw5rHdeQEq1g4QF28pjGn7SMU7mzsV6"
+				"bzz-raw://657b05fc8b277528116d277086ede0493627c0a7a7ae88073487f929e4d907ac",
+				"dweb:/ipfs/QmbBXWRr31VGgPfZj1srkBUALNhU3U3FQVtboDrwVxWXbr"
 			]
 		}
 	},

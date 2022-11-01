@@ -209,54 +209,66 @@ contract ProductSC {
     }
     
     // retrieve a product's information at a specified time
-//     function getProductInfo(uint256 _id, uint256 _timestamp) public view returns 
-//     (
-//     uint256 fish_id, 
-//     address fisher_id, 
-//     address owner_id, 
-//     string memory fish_origin, 
-//    // uint256 time, 
-//     string memory lat, 
-//     string memory log, 
-//     bool quality, 
-//     State currentState
-//     )
+    function getProductInfo(uint256 _id) public view returns 
+    (
+        uint256 product_id, // the product identifier
+        address producer_id, // the address of the factory
+        address owner_id, // the current owner of the product, the first owner is product
+
+        State currentProductState,
+        uint256 productPrice, 
+        address distributor_id,
+        address retailer_id,
+        address consumer_id,
+        Details memory details
+    )
     
-//     {
-//     fish_id = fish[_id].ID; 
-//     fisher_id = fish[_id].fisherID;
-//     owner_id = fish[_id].ownerID;
-//     fish_origin = fish[_id].origin;
-//     lat = fish[_id].latitude[_timestamp];
-//     log = fish[_id].longitude[_timestamp];
-//     quality = fish[_id].safety;
-//     currentState = fish[_id].fishState;
-// }
+    {
+    product_id = product[_id].ID; 
+    producer_id = product[_id].producerID;
+    owner_id = product[_id].ownerID;
+    distributor_id= product[_id].distributorID;
+    retailer_id= product[_id].retailerID;
+    consumer_id= product[_id].consumerID;
+
+    currentProductState = product[_id].productState;
+    productPrice = product[_id].productPrice;
+
+    details= product[_id].details;
+}
+    function getProductDetails(uint256 _id) public view returns 
+    (
+        uint256 product_id, // the product identifier
+        address owner_id, // the current owner of the product, the first owner is product
+
+        State currentProductState,
+        uint256 productPrice, 
+
+        string memory product_name,
+        string memory product_brand,
+        string memory product_size,
+        string memory product_weight,
+        string memory product_length,  
+        string memory product_width,  
+        string memory product_height
+    )
     
-//     // retrieve a product's information at a specified time
-//     function getFishInfo(uint256 _id, uint256 _timestamp) public view returns 
-//     (
-//     uint256 fish_id, 
-//     address fisher_id, 
-//     address owner_id, 
-//     string memory fish_origin, 
-//    // uint256 time, 
-//     string memory lat, 
-//     string memory log, 
-//     bool quality, 
-//     State currentState
-//     )
-    
-//     {
-//     fish_id = fish[_id].ID; 
-//     fisher_id = fish[_id].fisherID;
-//     owner_id = fish[_id].ownerID;
-//     fish_origin = fish[_id].origin;
-//     lat = fish[_id].latitude[_timestamp];
-//     log = fish[_id].longitude[_timestamp];
-//     quality = fish[_id].safety;
-//     currentState = fish[_id].fishState;
-// }
+    {
+    product_id = product[_id].ID; 
+    owner_id = product[_id].ownerID;
+
+    currentProductState = product[_id].productState;
+    productPrice = product[_id].productPrice;
+    product_name = product[_id].details.name;
+    product_brand= product[_id].details.brand;
+    product_size= product[_id].details.size;
+    product_weight= product[_id].details.weight;
+    product_length= product[_id].details.length;
+    product_width= product[_id].details.width;
+    product_height= product[_id].details.height;
+
+}
+
 
 // retrieve an actor's information
 function getActorInfo(address _addr) public view returns
