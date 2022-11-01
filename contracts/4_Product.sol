@@ -71,14 +71,22 @@ contract ProductSC {
      mapping (uint256 => Product) private product; // a mapping from productID to a product
     
     // constructor, to be intialized when the contract is deployed 
-    constructor (string memory _name, string memory _symbol, uint256 _initialSupply) {
+    // constructor (string memory _name, string memory _symbol, uint256 _initialSupply) {
+    //     name = _name;
+    //     symbol = _symbol;
+    //     _totalSupply = _initialSupply;
+    //     tokenOwner = payable(msg.sender); //the address deploying the smart contract
+    //     balances[msg.sender] = _initialSupply; // the balances of the tokenOwner is intialized as the totalsupply
+    // }
+    
+    // constructor, to be intialized when the contract is deployed 
+    constructor (string memory _name, string memory _symbol) {
         name = _name;
         symbol = _symbol;
-        _totalSupply = _initialSupply;
         tokenOwner = payable(msg.sender); //the address deploying the smart contract
-        balances[msg.sender] = _initialSupply; // the balances of the tokenOwner is intialized as the totalsupply
     }
-    
+
+
     
     // modifier to check if the caller is the token owner
     modifier OnlyTokenOwner() {
@@ -181,14 +189,14 @@ contract ProductSC {
     }
     
     
-    // Buy tokens from the token owner
-    function buyToken() public payable {
-       uint256 tokenNum = msg.value/tokenPrice; //number of tokens to be bought
-       require(msg.value > 0); //the paid money should be more than 0
-      tokenOwner.transfer(msg.value); //transfer ether from the buyer to the seller (i.e., tokenOwner)
-        balances[tokenOwner] -= tokenNum; // the number of tokens held by the token owner decreases
-        balances[msg.sender] += tokenNum;  // the buyer gets the corresponding number of tokens
-    }
+    // // Buy tokens from the token owner
+    // function buyToken() public payable {
+    //    uint256 tokenNum = msg.value/tokenPrice; //number of tokens to be bought
+    //    require(msg.value > 0); //the paid money should be more than 0
+    //   tokenOwner.transfer(msg.value); //transfer ether from the buyer to the seller (i.e., tokenOwner)
+    //     balances[tokenOwner] -= tokenNum; // the number of tokens held by the token owner decreases
+    //     balances[msg.sender] += tokenNum;  // the buyer gets the corresponding number of tokens
+    // }
     
     // token transfer from the caller to a specified account
     function tokenTransfer(address _to, uint256 _amount) public returns (bool) {
@@ -200,7 +208,7 @@ contract ProductSC {
         return true;
     }
     
-    function register(address _addr, Role _role, string memory _name) public {
+    function registerActor(address _addr, Role _role, string memory _name) public {
         Actor memory actor = actors[_addr];
         actor.role = _role;
         actor.name = _name;
@@ -256,10 +264,22 @@ contract ProductSC {
         product[_id].distributorID = msg.sender;
     }
 
+    function reciveProduct(uint256 _id, uint256 _timestamp) public OnlyRetailer{
+        Product storage boughtProduct = product[_id];
+        uint256 tokenNumber = balances[msg.sender];
 
+        
+        product[_id].timestamp[4] = _timestamp;  // update the on-chain information
+        product[_id].distributorID = msg.sender;
+
+
+        tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
+        product[_id].ownerID = msg.sender;
+        
+    }
 
      // buy a product from the seller
-    function buyProduct(uint256 _id, uint256 _timestamp) public OnlyDistributor{
+    function sellProduct(uint256 _id, uint256 _timestamp, address newOwner) public OnlyRetailer{
         Product storage boughtProduct = product[_id];
         uint256 tokenNumber = balances[msg.sender];
         require(tokenNumber >= boughtProduct.productPrice);
@@ -271,9 +291,13 @@ contract ProductSC {
 
         tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
         product[_id].productState = State.Sold;
-        product[_id].ownerID = msg.sender;
-        
+        product[_id].ownerID = newOwner;
+        product[_id].consumerID = newOwner;
     }
+
+
+
+
     
     // retrieve a product's information at a specified time
     function getProductInfo(uint256 _id) public view returns 
