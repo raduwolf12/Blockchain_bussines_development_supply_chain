@@ -6,20 +6,19 @@ contract ProductSC {
     string public symbol; //define a token symbol
     address payable public  tokenOwner;  //token tokenOwner, the address can receive ether
     uint256 constant tokenPrice = 100; // token price, unit wei
-    int256 constant temp_threshold = -10; // temperature temp_threshold
-    uint256 constant slot_num = 4;
+    uint256 constant state_num = 6;
     
     uint256 private _totalSupply; //the total supply of the tokenOwner
     
 
     // product state 
     enum State {
-        Produced, // 0  Produced by factory
-        Ordered, // 1  Sold to distributors
-        Shipped, // 2 //shipped by distributors or transporters
-        Stored, // 3 //product is stored 
-        Received, // 4 // received by retailors
-        Purchased // 5 //purchased by consumers
+        Ordered,  // 0 //Ordered by brands
+        Produced, // 1 //Produced by factory
+        Shipped,  // 2 //shipped by distributors or transporters
+        Stored,   // 3 //Product is stored 
+        Received, // 4 //Received by retailors
+        Purchased // 5 //Purchased by consumers
     }
     
     // different roles
@@ -36,7 +35,7 @@ contract ProductSC {
         uint256 ID; // the product identifier
         address ownerID; // the current owner of the product, the first owner is product
         address producerID; // the address of the factory
-        uint256[slot_num] timestamp; // different timestamps
+        uint256[state_num] timestamp; // different timestamps for each state process
         
         State productState;
         uint256 productPrice; 
