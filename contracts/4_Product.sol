@@ -125,10 +125,46 @@ contract ProductSC {
     }
     
     // token minting, only the token owner can mint tokens, _amount is the number of tokens to be mint
-    function mint(uint256 _amount) public OnlyTokenOwner {
-        _totalSupply += _amount; // the total token supply increases
-        balances[msg.sender] += _amount; //the token balance of the token owner increases
-    }
+    // function mint(uint256 _amount) public OnlyTokenOwner {
+    //     _totalSupply += _amount; // the total token supply increases
+    //     balances[msg.sender] += _amount; //the token balance of the token owner increases
+    // }
+   
+    //mint when ordered
+    //  function orderProduct(uint256 _amount, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length, string memory _width, string memory _height) public OnlyTokenOwner {
+    //     uint256 index=0;
+
+    //     if(_totalSupply!=0){
+    //         index=_totalSupply;
+    //     }
+
+    //       Details memory _details;
+    //       _details.name=_name;
+    //      _details.brand=_brand;
+    //      _details.size=_size;
+    //      _details.weight=_weight;
+    //      _details.length =_length;
+    //      _details.width =_width;
+    //      _details.height=_height;
+       
+    //     for(uint256 i=index;i<index+_amount;i++){
+    //         product[i]= Product({  ID:i,
+    //         ownerID: address(0),
+    //         producerID: address(0),
+    //         timestamp: block.timestamp,
+    //         productState:State.Ordered,
+    //         productPrice:100,
+    //         distributorID:address(0),
+    //         retailerID:address(0),
+    //         consumerID:address(0),
+    //         details:_details });
+    //     }
+
+    //     _totalSupply += _amount; // the total token supply increases
+    //     balances[msg.sender] += _amount; //the token balance of the token owner increases
+
+    // }
+
     
     // token burning, only the token owner can burn a certain amount of tokens, 
     // the owner can burn amount of tokens of a given account
@@ -168,15 +204,15 @@ contract ProductSC {
         actors[_addr] = actor;
         
     }
-    // produce a product and record the information on the blockchain, only the producer can call this function
-    function produceProduct(uint256 _id, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyProducer{
+    // order a product and record the information on the blockchain, only the producer can call this function
+    function orderProduct(uint256 _id, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyProducer{
         Product storage newProduct = product[_id];
         newProduct.ID = _id;
         newProduct.ownerID = msg.sender;
         newProduct.producerID = msg.sender;
         newProduct.timestamp[0] = _timestamp;
       
-        newProduct.productState= State.Produced;
+        newProduct.productState= State.Ordered;
       
         newProduct.productPrice=_price; 
         newProduct.distributorID=address(0);
@@ -189,7 +225,18 @@ contract ProductSC {
         newProduct.details.length = _length;  
         newProduct.details.width = _width;  
         newProduct.details.height = _height;
+
+        _totalSupply += 1; // the total token supply increases by 1
+        balances[msg.sender] += 1;
     }
+
+
+ function produceProduct(uint256 _id) public OnlyProducer{
+        Product storage newProduct = product[_id];
+        newProduct.productState= State.Produced;
+    }
+
+
 
      // buy a product from the seller
     function buyProduct(uint256 _id, uint256 _timestamp) public OnlyDistributor{
