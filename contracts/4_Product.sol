@@ -6,19 +6,23 @@ contract ProductSC {
     string public symbol; //define a token symbol
     address payable public  tokenOwner;  //token tokenOwner, the address can receive ether
     uint256 constant tokenPrice = 100; // token price, unit wei
-    uint256 constant state_num = 6;
+    uint256 constant state_num = 5;
     
     uint256 private _totalSupply; //the total supply of the tokenOwner
     
 
     // product state 
     enum State {
-        Ordered,  // 0 //Ordered by brands
-        Produced, // 1 //Produced by factory
-        Shipped,  // 2 //shipped by distributors or transporters
-        Stored,   // 3 //Product is stored 
-        Received, // 4 //Received by retailors
-        Purchased // 5 //Purchased by consumers
+        Ordered,    // 0 //Ordered by brands
+        Produced,   // 1 //Produced by factory
+        In_Transit, // 2 //shipped by distributors or transporters and in transit
+        Avalaible,  // 3 // reached destination
+        Sold        // 4 //Sold to consumers
+
+        
+        // Shipped,  // 2 //shipped by distributors or transporters
+        // Stored,   // 3 //Product is stored 
+        // Received, // 4 //Received by retailors
     }
     
     // different roles
@@ -205,7 +209,7 @@ contract ProductSC {
         
     }
     // order a product and record the information on the blockchain, only the producer can call this function
-    function orderProduct(uint256 _id, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyProducer{
+    function orderProduct(uint256 _id, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
         Product storage newProduct = product[_id];
         newProduct.ID = _id;
         newProduct.ownerID = msg.sender;
@@ -231,9 +235,25 @@ contract ProductSC {
     }
 
 
- function produceProduct(uint256 _id) public OnlyProducer{
+    function produceProduct(uint256 _id, uint256 _timestamp) public OnlyProducer{
         Product storage newProduct = product[_id];
         newProduct.productState= State.Produced;
+        newProduct.timestamp[1] = _timestamp;
+        product[_id].producerID = msg.sender;
+    }
+
+    function shipProduct(uint256 _id, uint256 _timestamp) public OnlyDistributor{
+        Product storage newProduct = product[_id];
+        newProduct.productState= State.In_Transit;
+        newProduct.timestamp[2] = _timestamp;
+        product[_id].distributorID = msg.sender;
+    }
+
+    function shipProductFinished(uint256 _id, uint256 _timestamp) public OnlyDistributor{
+        Product storage newProduct = product[_id];
+        newProduct.productState= State.Avalaible;
+        newProduct.timestamp[3] = _timestamp;
+        product[_id].distributorID = msg.sender;
     }
 
 
@@ -245,13 +265,13 @@ contract ProductSC {
         require(tokenNumber >= boughtProduct.productPrice);
         require(boughtProduct.productState == State.Produced);
         
-        product[_id].timestamp[1] = _timestamp;  // update the on-chain information
-         product[_id].distributorID = msg.sender;
+        product[_id].timestamp[4] = _timestamp;  // update the on-chain information
+        product[_id].distributorID = msg.sender;
 
 
-         tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
-         product[_id].productState = State.Purchased;
-         product[_id].ownerID = msg.sender;
+        tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
+        product[_id].productState = State.Sold;
+        product[_id].ownerID = msg.sender;
         
     }
     
