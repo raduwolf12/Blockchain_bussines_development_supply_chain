@@ -217,6 +217,21 @@ contract ProductSC {
         balances[_to] += _amount;
         return true;
     }
+
+    function transferProductTokenBetweenConsumers(address _from, address _to, uint256 product_id) public OnlyConsumer returns (bool) {
+        require(balances[_from] >= 1); // the token balance of the caller should be more than the amount of tokens
+        require(_to != address(0));
+        require(product[product_id].ownerID == _from  );
+
+        Product storage newProduct = product[product_id];
+        newProduct.ownerID = _to;
+
+        balances[_from] -= 1;
+        balances[_to] += 1;
+
+        return true;
+    }
+
     
     function registerActor(address _addr, Role _role, string memory _name) public {
         Actor memory actor = actors[_addr];
