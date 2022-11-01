@@ -38,6 +38,7 @@ contract ProductSC {
     struct Product {
         uint256 ID; // the product identifier
         address ownerID; // the current owner of the product, the first owner is product
+        address ordererID;
         address producerID; // the address of the factory
         uint256[state_num] timestamp; // different timestamps for each state process
         
@@ -207,6 +208,15 @@ contract ProductSC {
         balances[_to] += _amount;
         return true;
     }
+
+    function tokenTransferFrom(address _from, address _to, uint256 _amount) public returns (bool) {
+        require(balances[_from] >= _amount); // the token balance of the caller should be more than the amount of tokens
+        require(_to != address(0));
+        
+        balances[_from] -= _amount;
+        balances[_to] += _amount;
+        return true;
+    }
     
     function registerActor(address _addr, Role _role, string memory _name) public {
         Actor memory actor = actors[_addr];
@@ -221,7 +231,8 @@ contract ProductSC {
         Product storage newProduct = product[_id];
         newProduct.ID = _id;
         newProduct.ownerID = msg.sender;
-        newProduct.producerID = msg.sender;
+        newProduct.ordererID = msg.sender;
+        newProduct.producerID = address(0);
         newProduct.timestamp[0] = _timestamp;
       
         newProduct.productState= State.Ordered;
@@ -248,6 +259,7 @@ contract ProductSC {
         newProduct.productState= State.Produced;
         newProduct.timestamp[1] = _timestamp;
         product[_id].producerID = msg.sender;
+        tokenTransferFrom(product[_id].ownerID,newProduct.producerID,1);
     }
 
     function shipProduct(uint256 _id, uint256 _timestamp) public OnlyDistributor{
@@ -255,28 +267,30 @@ contract ProductSC {
         newProduct.productState= State.In_Transit;
         newProduct.timestamp[2] = _timestamp;
         product[_id].distributorID = msg.sender;
+        tokenTransferFrom(product[_id].producerID,newProduct.distributorID,1);
     }
 
-    function shipProductFinished(uint256 _id, uint256 _timestamp) public OnlyDistributor{
+    function shipProductFinished(uint256 _id, uint256 _timestamp, address retailerID) public OnlyDistributor{
         Product storage newProduct = product[_id];
         newProduct.productState= State.Avalaible;
         newProduct.timestamp[3] = _timestamp;
         product[_id].distributorID = msg.sender;
-    }
-
-    function reciveProduct(uint256 _id, uint256 _timestamp) public OnlyRetailer{
-        Product storage boughtProduct = product[_id];
-        uint256 tokenNumber = balances[msg.sender];
+        tokenTransferFrom(product[_id].distributorID,retailerID,1);
 
         
-        product[_id].timestamp[4] = _timestamp;  // update the on-chain information
-        product[_id].distributorID = msg.sender;
-
-
-        tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
-        product[_id].ownerID = msg.sender;
-        
     }
+
+    // function reciveProduct(uint256 _id, uint256 _timestamp) public OnlyRetailer{
+    //     Product storage boughtProduct = product[_id];
+        
+    //     product[_id].timestamp[4] = _timestamp;  // update the on-chain information
+    //     product[_id].distributorID = msg.sender;
+
+
+    //     tokenTransfer(boughtProduct.ownerID,1);
+    //     product[_id].ownerID = msg.sender;
+        
+    // }
 
      // buy a product from the seller
     function sellProduct(uint256 _id, uint256 _timestamp, address newOwner) public OnlyRetailer{
@@ -286,10 +300,11 @@ contract ProductSC {
         require(boughtProduct.productState == State.Produced);
         
         product[_id].timestamp[4] = _timestamp;  // update the on-chain information
-        product[_id].distributorID = msg.sender;
+        product[_id].retailerID = msg.sender;
 
 
-        tokenTransfer(product[_id].ownerID,boughtProduct.productPrice);
+        tokenTransfer(product[_id].consumerID,1);
+
         product[_id].productState = State.Sold;
         product[_id].ownerID = newOwner;
         product[_id].consumerID = newOwner;
@@ -303,6 +318,7 @@ contract ProductSC {
     function getProductInfo(uint256 _id) public view returns 
     (
         uint256 product_id, // the product identifier
+        address orderer_id,
         address producer_id, // the address of the factory
         address owner_id, // the current owner of the product, the first owner is product
 
@@ -317,6 +333,7 @@ contract ProductSC {
     {
     product_id = product[_id].ID; 
     producer_id = product[_id].producerID;
+    orderer_id = product[_id].ordererID;
     owner_id = product[_id].ownerID;
     distributor_id= product[_id].distributorID;
     retailer_id= product[_id].retailerID;
