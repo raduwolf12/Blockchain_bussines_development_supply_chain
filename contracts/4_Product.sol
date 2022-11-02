@@ -242,9 +242,16 @@ contract ProductSC {
         
     }
     // order a product and record the information on the blockchain, only the producer can call this function
-    function orderProduct(uint256 _id, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
-        Product storage newProduct = product[_id];
-        newProduct.ID = _id;
+    function orderProduct(uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
+        
+        uint256 id=0;
+
+        if(_totalSupply!=0){
+            id= _totalSupply+1;
+        }
+
+        Product storage newProduct = product[id];
+        newProduct.ID = id;
         newProduct.ownerID = msg.sender;
         newProduct.ordererID = msg.sender;
         newProduct.producerID = address(0);
@@ -267,6 +274,41 @@ contract ProductSC {
         _totalSupply += 1; // the total token supply increases by 1
         balances[msg.sender] += 1;
     }
+    function orderProducts(uint256 _amount, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
+        uint256 index=0;
+
+        if(_totalSupply!=0){
+            index=_totalSupply;
+        }
+
+    for(uint256 i=index+1;i<index+_amount;i++){
+            Product storage newProduct = product[i];
+            newProduct.ID = i;
+            newProduct.ownerID = msg.sender;
+            newProduct.ordererID = msg.sender;
+            newProduct.producerID = address(0);
+            newProduct.timestamp[0] = _timestamp;
+      
+            newProduct.productState= State.Ordered;
+      
+            newProduct.productPrice=_price; 
+            newProduct.distributorID=address(0);
+            newProduct.retailerID=address(0);
+            newProduct.consumerID=address(0);
+            newProduct.details.name = _name;
+            newProduct.details.brand= _brand;
+            newProduct.details.size = _size;
+            newProduct.details.weight = _weight;
+            newProduct.details.length = _length;  
+            newProduct.details.width = _width;  
+            newProduct.details.height = _height;
+            }
+        _totalSupply += _amount; // the total token supply increases by 1
+        balances[msg.sender] += _amount;
+
+    }
+
+
 
 
     function produceProduct(uint256 _id, uint256 _timestamp) public OnlyProducer{
