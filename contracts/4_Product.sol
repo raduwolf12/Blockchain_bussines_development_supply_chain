@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
 contract ProductSC {
@@ -248,7 +249,7 @@ contract ProductSC {
         uint256 id=0;
 
         if(_totalSupply!=0){
-            id= _totalSupply+1;
+            id= _totalSupply;
         }
 
         Product storage newProduct = product[id];
