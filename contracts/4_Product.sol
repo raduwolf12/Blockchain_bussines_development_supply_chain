@@ -181,14 +181,15 @@ contract ProductSC {
     
     // token burning, only the token owner can burn a certain amount of tokens, 
     // the owner can burn amount of tokens of a given account
-    function burn(address _account, uint256 _amount) public OnlyTokenOwner {
+    function burn(address _account, uint256 _id) public OnlyTokenOwner {
         require(_account != address(0)); // the address is a non-zero address (can be the address of the token owner or other accounts)
-        require(_amount <= balances[_account]); // the amount of burned should not be more than the current balance
+        require(balances[_account]>=1); // the amount of burned should not be more than the current balance
         
-        _totalSupply -= _amount;
-        balances[_account] -= _amount;
+        delete product[_id];
+        _totalSupply -= 1;
+        balances[_account] -= 1;
     }
-    
+   
     
     // // Buy tokens from the token owner
     // function buyToken() public payable {
@@ -281,7 +282,7 @@ contract ProductSC {
             index=_totalSupply;
         }
 
-    for(uint256 i=index+1;i<index+_amount;i++){
+    for(uint256 i=index;i<index+_amount;i++){
             Product storage newProduct = product[i];
             newProduct.ID = i;
             newProduct.ownerID = msg.sender;
