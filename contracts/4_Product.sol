@@ -18,11 +18,6 @@ contract ProductSC {
         In_Transit, // 2 //shipped by distributors or transporters and in transit
         Available,  // 3 // reached destination
         Sold        // 4 //Sold to consumers
-
-        
-        // Shipped,  // 2 //shipped by distributors or transporters
-        // Stored,   // 3 //Product is stored 
-        // Received, // 4 //Received by retailors
     }
     
     // different roles
@@ -30,7 +25,8 @@ contract ProductSC {
     Producer, // 0 
     Distributor, // 1 
     Retailer, // 2 
-    Consumer // 3
+    Consumer, // 3
+    Brand //4
     }
     
     // define a struct "Product"
@@ -70,23 +66,13 @@ contract ProductSC {
      mapping (address => Actor) private actors;
      mapping (uint256 => Product) private product; // a mapping from productID to a product
     
-    // constructor, to be intialized when the contract is deployed 
-    // constructor (string memory _name, string memory _symbol, uint256 _initialSupply) {
-    //     name = _name;
-    //     symbol = _symbol;
-    //     _totalSupply = _initialSupply;
-    //     tokenOwner = payable(msg.sender); //the address deploying the smart contract
-    //     balances[msg.sender] = _initialSupply; // the balances of the tokenOwner is intialized as the totalsupply
-    // }
-    
+
     // constructor, to be intialized when the contract is deployed 
     constructor (string memory _name, string memory _symbol) {
         name = _name;
         symbol = _symbol;
         tokenOwner = payable(msg.sender); //the address deploying the smart contract
     }
-
-
     
     // modifier to check if the caller is the token owner
     modifier OnlyTokenOwner() {
@@ -113,6 +99,10 @@ contract ProductSC {
         require(actors[msg.sender].role == Role.Consumer, 'caller is not a consumer.');
         _;
     }
+     modifier OnlyBrand() {
+        require(actors[msg.sender].role == Role.Brand, 'caller is not a brand.');
+        _;
+    }
     
       modifier registered(address _addr) {
       require(actors[_addr].isDefined, 'Actor does not exist.');
@@ -135,48 +125,6 @@ contract ProductSC {
         return _addr.balance;
     }
     
-    // token minting, only the token owner can mint tokens, _amount is the number of tokens to be mint
-    // function mint(uint256 _amount) public OnlyTokenOwner {
-    //     _totalSupply += _amount; // the total token supply increases
-    //     balances[msg.sender] += _amount; //the token balance of the token owner increases
-    // }
-   
-    //mint when ordered
-    //  function orderProduct(uint256 _amount, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length, string memory _width, string memory _height) public OnlyTokenOwner {
-    //     uint256 index=0;
-
-    //     if(_totalSupply!=0){
-    //         index=_totalSupply;
-    //     }
-
-    //       Details memory _details;
-    //       _details.name=_name;
-    //      _details.brand=_brand;
-    //      _details.size=_size;
-    //      _details.weight=_weight;
-    //      _details.length =_length;
-    //      _details.width =_width;
-    //      _details.height=_height;
-       
-    //     for(uint256 i=index;i<index+_amount;i++){
-    //         product[i]= Product({  ID:i,
-    //         ownerID: address(0),
-    //         producerID: address(0),
-    //         timestamp: block.timestamp,
-    //         productState:State.Ordered,
-    //         productPrice:100,
-    //         distributorID:address(0),
-    //         retailerID:address(0),
-    //         consumerID:address(0),
-    //         details:_details });
-    //     }
-
-    //     _totalSupply += _amount; // the total token supply increases
-    //     balances[msg.sender] += _amount; //the token balance of the token owner increases
-
-    // }
-
-    
     // token burning, only the token owner can burn a certain amount of tokens, 
     // the owner can burn amount of tokens of a given account
     function burn(address _account, uint256 _id) public OnlyTokenOwner {
@@ -187,16 +135,6 @@ contract ProductSC {
         _totalSupply -= 1;
         balances[_account] -= 1;
     }
-   
-    
-    // // Buy tokens from the token owner
-    // function buyToken() public payable {
-    //    uint256 tokenNum = msg.value/tokenPrice; //number of tokens to be bought
-    //    require(msg.value > 0); //the paid money should be more than 0
-    //   tokenOwner.transfer(msg.value); //transfer ether from the buyer to the seller (i.e., tokenOwner)
-    //     balances[tokenOwner] -= tokenNum; // the number of tokens held by the token owner decreases
-    //     balances[msg.sender] += tokenNum;  // the buyer gets the corresponding number of tokens
-    // }
     
     // token transfer from the caller to a specified account
     function tokenTransfer(address _to, uint256 _amount) public returns (bool) {
@@ -241,7 +179,7 @@ contract ProductSC {
         
     }
     // order a product and record the information on the blockchain, only the producer can call this function
-    function orderProduct(uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
+    function orderProduct(uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyBrand{
         
         uint256 id=0;
 
@@ -273,7 +211,7 @@ contract ProductSC {
         _totalSupply += 1; // the total token supply increases by 1
         balances[msg.sender] += 1;
     }
-    function orderProducts(uint256 _amount, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
+    function orderProducts(uint256 _amount, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyBrand{
         require(_amount >= 1);
         uint256 index=0;
 
@@ -308,9 +246,6 @@ contract ProductSC {
 
     }
 
-
-
-
     function produceProduct(uint256 _id, uint256 _timestamp) public OnlyProducer{
         Product storage newProduct = product[_id];
         newProduct.productState= State.Produced;
@@ -337,18 +272,6 @@ contract ProductSC {
         
     }
 
-    // function reciveProduct(uint256 _id, uint256 _timestamp) public OnlyRetailer{
-    //     Product storage boughtProduct = product[_id];
-        
-    //     product[_id].timestamp[4] = _timestamp;  // update the on-chain information
-    //     product[_id].distributorID = msg.sender;
-
-
-    //     tokenTransfer(boughtProduct.ownerID,1);
-    //     product[_id].ownerID = msg.sender;
-        
-    // }
-
      // buy a product from the seller
     function sellProduct(uint256 _id, uint256 _timestamp, address newOwner) public OnlyRetailer{
         Product storage boughtProduct = product[_id];
@@ -366,10 +289,6 @@ contract ProductSC {
         product[_id].ownerID = newOwner;
         product[_id].consumerID = newOwner;
     }
-
-
-
-
     
     // retrieve a product's information at a specified time
     function getProductInfo(uint256 _id) public view returns 
