@@ -6,7 +6,6 @@ contract ProductSC {
     string public name; //deifne a token name
     string public symbol; //define a token symbol
     address payable public  tokenOwner;  //token tokenOwner, the address can receive ether
-    uint256 constant tokenPrice = 100; // token price, unit wei
     uint256 constant state_num = 5;
     
     uint256 private _totalSupply; //the total supply of the tokenOwner
@@ -17,7 +16,7 @@ contract ProductSC {
         Ordered,    // 0 //Ordered by brands
         Produced,   // 1 //Produced by factory
         In_Transit, // 2 //shipped by distributors or transporters and in transit
-        Avalaible,  // 3 // reached destination
+        Available,  // 3 // reached destination
         Sold        // 4 //Sold to consumers
 
         
@@ -31,8 +30,7 @@ contract ProductSC {
     Producer, // 0 
     Distributor, // 1 
     Retailer, // 2 
-    Depository, //3
-    Consumer // 4
+    Consumer // 3
     }
     
     // define a struct "Product"
@@ -110,12 +108,6 @@ contract ProductSC {
         require(actors[msg.sender].role == Role.Retailer, 'caller is not a retailer.');
         _;
     }
-    
-     modifier OnlyDepository() {
-        require(actors[msg.sender].role == Role.Depository, 'caller is not a depository.');
-        _;
-    }
-
 
      modifier OnlyConsumer() {
         require(actors[msg.sender].role == Role.Consumer, 'caller is not a consumer.');
@@ -133,6 +125,11 @@ contract ProductSC {
         return balances[_addr];
     }
     
+    //return the token balance of a passed address
+    function tokenTotalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
     // return the ether banlance of a passed address
     function etherBalance(address _addr) public view returns (uint256) {
         return _addr.balance;
@@ -277,6 +274,7 @@ contract ProductSC {
         balances[msg.sender] += 1;
     }
     function orderProducts(uint256 _amount, uint256 _timestamp, uint256 _price, string memory _name, string memory _brand, string memory _size, string memory _weight, string memory _length ,string memory _width ,string memory _height) public OnlyTokenOwner{
+        require(_amount >= 1);
         uint256 index=0;
 
         if(_totalSupply!=0){
@@ -331,7 +329,7 @@ contract ProductSC {
 
     function shipProductFinished(uint256 _id, uint256 _timestamp, address retailerID) public OnlyDistributor{
         Product storage newProduct = product[_id];
-        newProduct.productState= State.Avalaible;
+        newProduct.productState= State.Available;
         newProduct.timestamp[3] = _timestamp;
         product[_id].distributorID = msg.sender;
         tokenTransferFrom(product[_id].distributorID,retailerID,1);
@@ -355,8 +353,8 @@ contract ProductSC {
     function sellProduct(uint256 _id, uint256 _timestamp, address newOwner) public OnlyRetailer{
         Product storage boughtProduct = product[_id];
         uint256 tokenNumber = balances[msg.sender];
-        require(tokenNumber >= boughtProduct.productPrice);
-        require(boughtProduct.productState == State.Produced);
+        require(tokenNumber > 0);
+        require(boughtProduct.productState == State.Available);
         
         product[_id].timestamp[4] = _timestamp;  // update the on-chain information
         product[_id].retailerID = msg.sender;
